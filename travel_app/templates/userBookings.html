@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | {{current_user.username}}'s Bookings Table{% endblock %}
+
+{% block body %}
+{% load static %}
+{% load humanize %}
+
+<div id="body_bg" class="py-5" style="position:relative;">
+
+    {% if messages %}
+    <div id="alert_parent" class="fixed-top">
+        <div id="alert" class="{{ message.tags }} rounded-pill w-50 alert alert-dark alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+            <h5>{{ message }}</h5>
+            <button type="button" class="btn-close noti_close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <center>
+        <div class="p-2">
+
+            <p class="fs-2 fw-bold">My Bookings</p>
+
+            <div id="tables_layout">
+                <table id="tables">
+                    <thead>
+                        <tr>
+                            <th width="4%">#</th>
+                            <th width="10%">Departure-date</th>
+                            <th width="32%">Plan</th>
+                            <th width="15%">Duration</th>
+                            <th width="8%">Total-cost</th>
+                            <th width="6%">Code</th>
+                            <th width="13%">booked-time</th>
+                            <th width="12%">Cancel</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <th>{{forloop.counter}}</th>
+                            <td>{{booking.booking_date}}</td>
+                            <td>{{booking.booking_plan}}</td>
+                            <td>{{booking.duration}}</td>
+                            <td>{{booking.total_cost}}</td>
+                            <td>{{booking.booking_code}}</td>
+                            <td>{{booking.created_time|naturaltime}}</td>
+                            <td id="confirm">
+                                <form method="POST" action="/main/booking_cancel/{{request.user.id}}/{{current_user.id}}/{{booking.id}}/">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-light" {% if booking.booking_status == True %} disabled {% endif %} >
+                                        {% if booking.booking_status == False %} Cancel booking {% else %} confirmed {% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                    {% if bookings %}
+                        <p class="m-3 fw-bold">That's all</p>
+                    {% else %}
+                        <p class="m-3 fw-bold">No booking yet</p>
+                    {% endif %}
+            </div>
+
+        </div>
+    </center>
+
+    <a href="/main/postlist/" class="btn btn-outline-dark" style="position:absolute; bottom:10px; right:10px;"><strong>Go back</strong></a>
+
+</div>
+
+{% endblock %}

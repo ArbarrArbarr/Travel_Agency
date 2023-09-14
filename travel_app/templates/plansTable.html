@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | Admin's Plans Table{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<div id="body_bg" class="py-5" style="position:relative;">
+    <center>
+        <div class="container p-2">
+
+            <p class="fs-2 fw-bold">Plans Table</p>
+
+            <div id="tables_layout">
+                <table id="tables">
+                    <thead>
+                        <tr>
+                            <th width="4%">#</th>
+                            <th width="15%">Image</th>
+                            <th width="51%">Title</th>
+                            <th width="10%">Adult-price</th>
+                            <th width="10%">Child-price</th>
+                            <th width="10%">Editing</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for plan in plans %}
+                        <tr id="img_tr">
+                            <th>{{forloop.counter}}</th>
+                            <td>
+                                <div id="img_layout">
+                                    <img src="/media/{{plan.image}}/" >
+                                </div>
+                            </td>
+                            <td>{{plan.title}}</td>
+                            <td>{{plan.price_for_adult_per_day}}</td>
+                            <td>{{plan.price_for_child_per_day}}</td>
+                            <td><a href="/main/postdetail/{{plan.id}}/" class="btn btn-outline-light">Edit plan</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="m-3 fw-bold">That's all</p>
+            </div>
+
+        </div>
+    </center>
+
+    <a href="/main/postlist/" class="btn btn-outline-dark" style="position:absolute; bottom:10px; right:10px;"><strong>Go back</strong></a>
+
+</div>
+
+{% endblock %}

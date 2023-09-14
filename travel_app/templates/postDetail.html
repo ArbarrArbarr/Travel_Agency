@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | Travel Plan Update{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<div class="container p-5" id="form_outside">
+
+    <img alt="gif peeking" id="form_gif1" width="150px" height="150px" src="{% static 'img/gif1.gif' %}">
+    <img alt="gif boring" id="form_gif2" width="150px" height="150px" src="{% static 'img/gif2.gif' %}">
+
+    <form method="POST" class="border border-dark border-5 p-5" id="form" action="/main/postdetail/{{plan.id}}/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+
+            <h1 class="mb-5" style="text-align:center; font-family:Fantasy;">Plan Details</h1>
+
+            <div class="row">
+                <div class="col-5 mb-3">
+                    <label for="floatingInput"><b>Title</b></label>
+                    <input name="title" value="{{plan.title}}" type="text" class="form-control form_input" id="floatingInput" required>
+                </div>
+                <div class="col-3 mb-3">
+                    <label><b>Regions</b></label>
+                    <select name="region" class="form_input"
+                        onfocus="this.size=6;"
+                        onblur="this.size=0;"
+                        onchange="this.size=1; this.blur()" required>
+
+                        {% for region in regions %}
+                        <option class="select_option" value="{{region.id}}" {% if region.id == plan.region_id %} selected {% endif %}>{{region.name}}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div class="col-2 mb-3">
+                    <label for="floatingInput"><b>Adult-per-day</b></label>
+                    <input name="adult" value="{{plan.price_for_adult_per_day}}" type="number" step="1000" class="form-control form_input" id="floatingInput" required>
+                </div>
+                <div class="col-2 mb-3">
+                    <label for="floatingInput"><b>Child-per-day<b/></label>
+                    <input name="child" value="{{plan.price_for_child_per_day}}" type="number" step="1000" class="form-control form_input" id="floatingInput" required>
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="mb-1">
+                        <label for="floatingInput" class="form-label "><b>Image: (not available to change)</b></label>
+                    </div>
+
+                    <div>
+                        <a href="{{plan.image.url}}"><img alt="travel" id="preview" width="100%" height="100%" src="/media/{{plan.image}}"></a>
+                    </div>
+                </div>
+
+                <div class="col-8">
+                    <div>
+                        <label for="floatingTextarea2"><b>Reference</b></label>
+                        <textarea name="detail" class="form-control form_input form_input_ref" style="height:500px;" id="floatingTextarea2" required>{{plan.detail}}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="d-flex flex-row-reverse m-2">
+                <button type="submit" class="btn btn-outline-dark px-5 mx-2"><b> Update </b></button>
+                <a href="/main/postdelete/{{plan.id}}/" class="btn btn-outline-danger px-5 mx-2"><b> Delete </b></a>
+                <button onclick="window.history.back(); return false;" class="btn btn-outline-secondary px-5 mx-2"><b> Go back </b></button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% endblock %}

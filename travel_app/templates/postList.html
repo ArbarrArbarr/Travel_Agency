@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | Home Page{% endblock title %}
+
+{% block body %}
+{% load static %}
+
+<div id="body_bg" data-bs-spy="scroll" data-bs-target="#navbar_menu" data-bs-smooth-scroll="true">
+
+  {% if messages %}
+  <div id="alert_parent" class="fixed-top">
+      <div id="alert" class="{{ message.tags }} rounded-pill w-50 alert alert-dark alert-dismissible fade show" role="alert">
+      {% for message in messages %}
+          <h5>{{ message }}</h5>
+          <button type="button" class="btn-close noti_close" data-bs-dismiss="alert" aria-label="Close"></button>
+      {% endfor %}
+      </div>
+  </div>
+  {% endif %}
+
+  <div id="headerPic">
+    <img id="headerPicture" style="width:100%;" class="mb-5" alt="travel visit" src="{% static 'img/my-main-wallpaper.png' %}" >
+    <div id="headerPicOver">
+      <img id="logo" alt="logo" src="{% static 'img/logo.png' %}" >
+      <p id="picOverHead"><strong><i>(Arbarr Arbarr)</i></strong></p>
+    </di>
+  </div>  
+
+  <div class="row">
+    <div class="col-4 text-dark" style="text-align:center;">
+      <p class="fs-1"><b>Welcome!</b></p>
+      <p class="fs-4 pe-3 text-end"><b>from local-travel-angency.</b><p> 
+    </div>
+    <div class="d-flex col-1 " style="height: auto;">
+      <div class="vr" style="margin-left:50%; width:2px;"></div>
+    </div>
+    <div class="col-7" style="margin-top: 10%;">
+      <div class="w-75 p-3 text-danger" style="border-left:3px solid gray; border-bottom:3px solid gray; line-height:30px;">
+        <span><strong>lookging for the best booking angency for trips or travels?</strong></span><br/>
+        <span>Belows are famous travel plans for dear visitors.</span><br/>
+        <span>Almost all the famous local vacations are available.</span><br/>
+        <span>want to choose a place by some region or state where you want to go? Easy.</span><br/>
+        <span>Just enjoy...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container slider-container swiper mt-5" id="plans">
+
+    <div class="navbar" style="border-top:1px solid;">
+      <h2 class="pt-5 text-decoration-underline"><a class="text-danger" href="/main/postlist/#plans">Available Plans</a></h2>
+
+      <form class="d-flex pt-5" role="search" action="/main/search_by/">
+        <input name="search" id="search_input" class="form-control me-2" {% if search %} value="{{search}}" {%endif%} type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-secondary" type="submit">Search</button>
+      </form>
+    </div>
+
+    <div class="slide-content mt-5">
+      <div class="card-wrapper swiper-wrapper">
+
+        {% for plan in plans %}
+          <div class="card link_card swiper-slide">
+            <a id="card_link" href="/main/booking/{{plan.id}}/">
+              <div class="card-image plan_image" id="card-image">
+
+                <img class="card-img card_img" alt="travel" src="/media/{{plan.image}}" >
+
+                {% if request.user.is_superuser %}
+                <a role="button" title="Edit Plan" href="/main/postdetail/{{plan.id}}/">
+                  <div id="floating_information2">
+                    <img alt="information" id="floating_information_icon2" src="{% static 'img/information.png' %}" >
+                  </div>
+                </a>
+                {% endif %}
+
+              </div>
+            </a>
+
+            <a id="card_link" href="/main/booking/{{plan.id}}/">
+              <div class="card-body link_card_body plan_link_card_body">
+                <h6 class="card-text card_text">{{plan.title}}</h6>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+      </div>
+      <div class="swiper-button-next swiper_nav_btn"></div>
+      <div class="swiper-button-prev swiper_nav_btn"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+
+  </div>
+
+  <div class="container slider-container swiper mt-5 mb-5" id="regions">
+
+    <div style="border-top:1px solid;">
+      <h2 class="pt-5 text-decoration-underline"><a class="text-danger" href="/main/postlist/#regions" >Regions / States</a></h2>
+    </div>
+
+    <div class="slide-content2 mt-5">
+      <div class="card-wrapper swiper-wrapper">
+
+        {% for region in regions %}
+          <div class="card link_card swiper-slide">
+            <a id="card_link" href="/main/regiondetail/{{region.id}}/">
+              <div class="card-image" id="card-image">
+                <img class="card-img card_img" alt="travel" src="/media/{{region.image}}" >
+              </div>
+            </a>
+            <a id="card_link" href="/main/regiondetail/{{region.id}}/">
+              <div class="card-body link_card_body">
+                <h3 class="card-text card_text">{{region.name}}</h3>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+      </div>
+      
+      <div class="swiper-button-next swiper_nav_btn"></div>
+      <div class="swiper-button-prev swiper_nav_btn"></div>
+      <div class="swiper-pagination"></div>
+    </div>
+
+  </div>
+
+  {% if request.user.is_superuser %}
+  <a role="button" title="New Plan" href="/main/postcreate/">
+    <div id="floating_add">
+      <img alt="plus add" id="floating_addicon" src="{% static 'img/add_plan.png' %}" >
+    </div>
+  </a>
+  {% endif %}
+
+</div>
+
+<script>
+  var swiper = new Swiper(".slide-content", {
+    slidesPerView: 5,
+    spaceBetween: 2,
+    centerSlide: 'true',
+    fade: 'true',
+    grabCursor: 'true',
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+      dynamicBullets: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+
+  var swiper2 = new Swiper(".slide-content2", {
+    slidesPerView: 5,
+    spaceBetween: 2,
+    centerSlide: 'true',
+    grabCursor: 'true',
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+      dynamicBullets: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | Travel Plan Create{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<div class="container p-5" id="form_outside">
+
+    <img alt="gif peeking" id="form_gif1" width="150px" height="150px" src="{% static 'img/gif1.gif' %}">
+    <img alt="gif boring" id="form_gif3" width="120px" height="120px" src="{% static 'img/gif3.gif' %}">
+
+    <form method="POST" class="border border-dark border-5 p-5" id="form" action="/main/postdelete/{{plan.id}}/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+
+            <h1 class="mb-5" style="text-align:center; font-family:Fantasy;">Plan Delete</h1>
+
+            <p class="fs-5 fw-bold mb-5 mx-auto px-auto text-center"> Are you sure you want to <span class="text-danger">delete</span> this post? </p>
+
+            <div class="d-flex flex-row-reverse m-2">
+                <button type="submit" class="btn btn-outline-danger px-5 mx-2"><b> Confirm </b></button>
+                <a onclick="window.history.back(); return false;" class="btn btn-outline-secondary px-5 mx-2"><b> Cancel </b></a>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% endblock %}

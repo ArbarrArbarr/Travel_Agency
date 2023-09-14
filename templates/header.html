@@ -1,0 +1,110 @@
+{% load static %}
+<nav id="mainNavH" class="navbar sticky-top bg-secondary">
+    <div class="container-fluid" id="headerNav">
+
+      <a class="navbar-brand" id="main-title" href="/main/postlist/">Arbarr Arbarr</a>
+      
+      <ul class="nav" id="navbar_menu">
+        <li class="nav-item pt-3">
+          <a class="nav_link" href="/main/postlist/#headerPicture">Home</a>
+        </li>
+        <li class="nav-item pt-3">
+          <a class="nav_link" href="/main/postlist/#plans">Plans</a>
+        </li>
+        <li class="nav-item pt-3">
+          <a class="nav_link" href="/main/postlist/#regions">Regions</a>
+        </li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a data-bs-toggle="offcanvas" href="#offcanvasRight" role="button" aria-controls="offcanvasRight">
+              {% if current_user.image  %}
+                <img id="profile_thumbnail" src="/media/{{current_user.image}}/" class="border border-2 border-light rounded-circle" height="50px" width="50px" alt="profile picture">
+              {% else %}
+                <img id="profile_thumbnail" src="{% static 'img/pf_default.jpg' %}" class="border border-2 border-light rounded-circle" height="50px" width="50px" alt="profile picture">
+              {% endif %}
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item pt-3">
+            <a class="nav_link_L" href="/login/">Login</a>
+          </li>
+        {% endif %}
+      </ul>
+
+    </div>
+</nav>
+
+<div class="offcanvas offcanvas-end" id="offcanvasRight" data-bs-scroll="true" data-bs-backdrop="static" tabindex="-1" aria-labelledby="offcanvasRightLabel">
+
+  <div class="offcanvas-header border-bottom">
+    <div>
+      <h5 class="offcanvas-title" id="offcanvasRightLabel">{{current_user.username}}</h5>
+      <p>{{current_user.email}}</p>
+    </div>
+    <div>
+      <button type="button" class="btn-close bg-light" data-bs-dismiss="offcanvas" aria-label="Close"></button><br/>
+    </div>
+  </div>
+
+  <div class="offcanvas-body p-0">
+    {% if current_user.image  %}
+      <a href="{{current_user.image.url}}">
+        <img id="profile_image" src="/media/{{current_user.image}}/" class="border border-1 border-light" alt="profile picture">
+      </a>
+    {% else %}
+      <img id="profile_image" src="{% static 'img/pf_default.jpg' %}" class="border border-1 border-light" alt="profile picture">
+    {% endif %}
+
+    <div id="menu_layout" class="mb-5">
+      {% if request.user.is_superuser %}
+
+        <a id="menu_links" href="/myadmin/users/{{current_user.id}}/">
+          <div id="menu_items">
+            <strong>Users table</strong>
+            <img src="{% static 'img/users.png' %}" alt="icon users">
+          </div>
+        </a>
+
+        <a id="menu_links" href="/myadmin/bookings/{{current_user.id}}/">
+          <div id="menu_items">
+            <strong>Bookings table</strong>
+            <img src="{% static 'img/bookings.png' %}" alt="icon users">
+          </div>
+        </a>
+
+        <a id="menu_links" href="/myadmin/plans/{{current_user.id}}/">
+          <div id="menu_items">
+            <strong>Plans table</strong>
+            <img src="{% static 'img/plans.png' %}" alt="icon users">
+          </div>
+        </a>
+
+        <a id="menu_links" href="/main/postcreate/">
+          <div id="menu_items">
+            <strong>Add new plan</strong>
+            <img src="{% static 'img/add_plan.png' %}" alt="icon users">
+          </div>
+        </a>
+
+      {% else %}
+
+        <a id="menu_links" href="/main/mybookings/{{request.user.id}}/{{current_user.id}}/">
+          <div id="menu_items">
+            <strong>My bookings</strong>
+            <img src="{% static 'img/bookings.png' %}" alt="icon users">
+          </div>
+        </a>
+
+      {% endif %}
+    </div>
+
+      <a id="menu_links" href="/logout/">
+        <div id="logout_layout">
+          <strong>Log out</strong>
+          <img src="{% static 'img/logout.png' %}" alt="icon users">
+        </div>
+      </a>
+  </div>
+
+</div>

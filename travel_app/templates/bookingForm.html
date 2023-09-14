@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | Travel Plan Booking{% endblock %}
+
+{% block body %}
+{% load static %}
+{% load humanize %}
+
+<div id="body_bg">
+
+    <!-- Messages -->
+    {% if messages %}
+    <div id="alert_parent" class="fixed-top">
+        <div id="alert" class="{{ message.tags }} rounded-pill w-50 alert alert-dark alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+            <h5>{{ message }}</h5>
+            <button type="button" class="btn-close noti_close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Top Part: Image and Description -->
+    <div class="pt-3 mx-auto row row-cols-1 row-cols-lg-2">
+        <div class="col pe-2 border-end border-1 border-dark">
+            <a href="{{plan.image.url}}"><img src="/media/{{plan.image}}/" style="width:100%;" alt="Image travel" class="img-fluid mb-2"></a>
+
+        </div>
+        <div class="col">
+            <p class="fs-2"><b>{{plan.title}}</b></p>
+            <pre id="Plan_description" class="text-danger text-justify">{{plan.detail}}</pre>
+
+            <!--  Reviews  -->
+            <div id="reviews_layout" class="p-2 mb-1 border border-2 border-secondary rounded-3">
+                <p class="fs-3 text-decoration-underline"><b>Reviews</b></p>
+                {% if reviews %}
+                    <div id="reviews" class="mb-4">
+                    {% for review in reviews %}
+                    
+                        <div style="align-items:center;" class="d-flex p-2 m-1">
+                            <img id="review_author" class="rounded-circle border border-2 border-secondary me-2"
+                                {% for user in users %} {% if user.id == review.user_id %} src="/media/{{user.image}}" {% endif %} {% endfor %}
+                            />
+
+                            <div class="me-1" style="max-width:75%;">
+                                <span class="fw-semibold" style="font-size:13px;">
+                                    {% for user in users %} {% if user.id == review.user_id %} 
+                                        {{user.username}} 
+                                    {% endif %} {% endfor %}
+                                </span></br>
+                                <div class="flex">
+                                    <div id="review_{{review.id}}" class="p-1 bg-secondary review">
+                                        <span class="to_edit">{{review.review}}</span>
+                                    </div>
+
+                                {% if current_user.id == review.user_id %}
+                                    <div class="row">
+                                        <span class="col text-start" style="font-size:12px; cursor:pointer;">
+                                            <a id="review_edit" onclick="review_edit('{{review.id}}')" href="#reviews_layout" class="text-decoration-none text-secondary">edit</a>
+                                        </span>
+                                        <span class="col text-end" style="font-size:12px; cursor:pointer;">
+                                            <a class="text-decoration-none text-danger" href="/main/review_delete/{{review.id}}/{{plan.id}}/">delete</a>
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                </div>
+                            </div>
+
+                            <span style="font-size:12px;"><i>{{review.created_time|naturaltime}}</i></span>
+                        </div>
+                    
+                    {% endfor %}
+                    </div>
+                        <b><p id="view_more_and_hide" onclick="view_more_and_hide()">View more...</p></b>
+                {% else %}
+                    <div class='m-5' style="display:flex; justify-content:center; align-items:center;">
+                        <b><p class="text-secondary">No reviews yet...</p></b>
+                    </div>
+                {% endif %}
+            </div>
+            <form id="review_cre_or_edit" method="POST" action="/main/review_create/{{current_user.id}}/{{plan.id}}/">
+                {% csrf_token %}
+                <div class="d-flex align-items-center">
+                    <input name="review" id="write_new_review" type="text" required/>
+                    <div id="new_review" class="bg-secondary m-1" onclick="new_review()">
+                        <img height="30px" width="30px" src="{% static 'img/new-review.png' %}"/>
+                    </div>
+                    {% if request.user.is_authenticated %}
+                        <button id="send_review" class="bg-secondary m-1">
+                            <img id="send_or_edit" height="30px" width="30px" src="{% static 'img/send-review.png' %}"/>
+                        </button>
+                    {% else %}
+                        <a id="send_review" class="bg-secondary m-1" href="/login/">
+                            <img height="30px" width="30px" src="{% static 'img/send-review.png' %}"/>
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr/>
+
+    <!-- Bottom Part: Travel Booking Form -->
+    <div class="container mt-5 pb-5">
+        <h2><b>Booking Form</b></h2>
+        <form id="booking_form" class="border border-4 border-dark rounded-2 px-4 py-3" method="POST" action="/main/booking/{{plan.id}}/">
+        {% csrf_token %}
+            <div class="row row-cols-md-2 row-cols-1">
+                <div class="col">
+                    <div class="col-md-8 col-12 mb-3">
+                        <label for="booking_date" class="form-label"><b>Departure date:</b></label>
+                        <input id="booking_date" name="booking_date" type="date" min="{{current_date}}" class="form-control form_input" required>
+                    </div>
+                    <div class="col-md-8 col-12 mb-3">
+                        <label for="departure-date" class="form-label"><b>Duration:</b></label>
+                        <div class="d-flex">
+                            <input id="duration_day" name="duration_day" type="number" min=1 value=1 class="form-control form_input me-1" required>
+                            <select id="duration_type" name="duration_type" class="form_input ms-1 p-1" onfocus="this.size=3;" onblur="this.size=0;" onchange="this.size=1; this.blur()" required>
+                                <option class="select_option" value="1" selected>day(s)</option>
+                                <option class="select_option" value="7" >Week(s)</option>
+                                <option class="select_option" value="30" >month(s)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-12 mb-3">
+                        <label for="adult_number" class="form-label"><b>Number of Adult(<span id="adult_price">{{plan.price_for_adult_per_day}}</span> Ks per):</b></label>
+                        <input id="adult_number" type="number" min=0 value=0 class="form-control form_input me-1" required>
+                    </div>
+                    <div class="col-md-8 col-12 mb-3">
+                        <label for="child_number" class="form-label"><b>Number of Child(<span id="child_price">{{plan.price_for_child_per_day}}<span> Ks per):</b>(age under 18)</label>
+                        <input id="child_number" type="number" min=0 value=0 class="form-control form_input ms-1" required>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="col-md-8 col-12 mb-3">
+                        <label for="booking_name" class="form-label"><b>Your name:</b></label>
+                        <input id="booking_name" name="booking_name" type="text" class="form-control form_input" required>
+                    </div>
+                    <div class="col-md-8 col-12 mb-3">
+                        <label for="booking_email" class="form-label"><b>Your email:</b></label>
+                        <input id="booking_email" name="booking_email" type="email" class="form-control form_input" required>
+                    </div>
+                    <div class="col-md-8 col-12 mb-5">
+                        <label for="booking_phone" class="form-label"><b>Your phone:</b></label>
+                        <input id="booking_phone" name="booking_phone" type="text" class="form-control form_input" required>
+                    </div>
+                    <div class="col-md-8 col-12 mb-3">
+                        <strong>Total Cost:</strong>
+                        <input id="total_cost" name="total_cost" type="text" class="rounded-1" readonly>
+                        <strong>Ks</strong>
+                    </div>  
+                </div>
+            </div>
+            <div class="d-flex flex-row-reverse">
+                <button type="submit" class="btn btn-outline-dark fw-bold">Book Now</button>
+            </div>            
+        </form>
+
+    </div>
+</div>
+
+<script>
+
+    function view_more_and_hide() {
+        var reviews = document.getElementById('reviews');
+        var viewMoreAndHide = document.getElementById('view_more_and_hide');
+    
+        var isCollapsed = reviews.classList.contains('collapsed');
+    
+        if (isCollapsed) {
+            reviews.classList.remove('collapsed');
+            reviews.style.height= "200px";
+            reviews.style.overflowY= "hidden";
+            viewMoreAndHide.textContent = "View more...";
+        } else {
+            reviews.classList.add('collapsed');
+            reviews.style.height= "auto";
+            reviews.style.overflowY= "auto";
+            viewMoreAndHide.textContent = "Hide...";
+        }
+    }
+
+    function new_review(){
+        var writeNewReview= document.getElementById('write_new_review');
+        var newReview= document.getElementById('new_review');
+        var sendReview= document.getElementById('send_review');
+    
+        writeNewReview.style.visibility= "visible";
+        writeNewReview.style.opacity= "1";
+        writeNewReview.style.width= "90%";
+        newReview.style.visibility= "hidden";
+        newReview.style.opacity= "0";
+        newReview.style.display= "none";
+        sendReview.style.visibility= "visible";
+        sendReview.style.opacity= "1";
+    }
+
+    function review_edit(reviewId){
+        var writeNewReview= document.getElementById('write_new_review');
+        var newReview= document.getElementById('new_review');
+        var sendReview= document.getElementById('send_review');
+        var sendOrEdit= document.getElementById('send_or_edit');
+        var reviewCreOrEdit= document.getElementById('review_cre_or_edit');
+        var toEdit= document.querySelector(`#review_${reviewId} .to_edit`);
+
+        writeNewReview.style.visibility= "visible";
+        writeNewReview.style.opacity= "1";
+        writeNewReview.style.width= "90%";
+        writeNewReview.value = toEdit.textContent;
+        newReview.style.visibility= "hidden";
+        newReview.style.opacity= "0";
+        newReview.style.display= "none";
+        sendReview.style.visibility= "visible";
+        sendReview.style.opacity= "1";
+        sendOrEdit.src="{% static 'img/edit_review.png' %}";
+        reviewCreOrEdit.action=`/main/review_edit/${reviewId}/{{plan.id}}/`;
+    }
+
+    function calculation(){
+        const duration= document.getElementById('duration_day').value * document.getElementById('duration_type').value;
+        const adultCost= document.getElementById('adult_number').value * parseFloat(document.getElementById('adult_price').textContent);
+        const childCost= document.getElementById('child_number').value * parseFloat(document.getElementById('child_price').textContent);
+        
+        const totalCost= (adultCost + childCost) * duration;
+
+        document.getElementById('total_cost').value= totalCost;
+    }
+
+    document.getElementById('adult_number').oninput= calculation;
+    document.getElementById('child_number').oninput= calculation;
+    document.getElementById('duration_day').oninput= calculation;
+    document.getElementById('duration_type').oninput= calculation;
+
+</script>
+
+{% endblock %}

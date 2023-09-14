@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Arbarr Arbarr | Available Plans in {{region.name}}{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<div>
+    <div class="p-5" style="background-color:rgba(128,128,128,1); position:sticky; top:0;">
+        <h1 id="region_head" class="text-decoration-overline text-center text-light m-5" style="font-variant:small-caps;"><b>{{region.name}}</b></h1>
+    </div>
+
+    <div id="body_bg" class="p-5 region_plans_body" style="position:relative;">
+
+        <div class="fs-2 text-center mb-5 pb-5 fw-bold">
+            <p>Available Plans in {{region.name}}</p>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-1 g-md-3 g-lg-5">
+            {% for plan in plans %}
+            <div class="col">
+                <a id="region_plan_card_link" class="text-decoration-none" href="/main/booking/{{plan.id}}/">
+                    <div class="card p-3 mx-auto plan_card">
+
+                        <div class="card-header bg-transparent">
+                            <p class="fs-5 text-center text-light"><b>{{plan.title}}</b></p>
+                        </div>
+                        <div class="card-image mx-auto" id="region_plan_card_image">
+                            <img id="region_plan_card_img" src="/media/{{plan.image}}" class="card-img" alt="travel">
+                        </div>
+                        
+                        {% if request.user.is_superuser %}
+                        <a role="button" title="Edit Plan" href="/main/postdetail/{{plan.id}}/">
+                            <div id="floating_information">
+                                <img alt="information" id="floating_information_icon" src="{% static 'img/information.png' %}" >
+                            </div>
+                        </a>
+                        {% endif %}
+
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <p class="text-center mt-5 font-monospace fw-bold text-secondary">That's all available<p>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
